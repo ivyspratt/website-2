@@ -1,5 +1,8 @@
 ---
 title: "About"
 ---
+## About Me
+My name is **Ivy Spratt**, and I am a senior at *Metea Valley High School*.
 
-About this site
+[Kane's Free Data Science Bootcamp](https://bootcamp.davidkane.info)
+
