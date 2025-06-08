@@ -1,0 +1,50 @@
+---
+title: "Billboard Graphic"
+execute:
+  echo: false
+---
+
+```{r}
+suppressPackageStartupMessages(library(tidyverse))
+suppressPackageStartupMessages(library(tidyr))
+```
+
+```{r}
+library(tidyverse)
+library(tidyr)
+
+data("billboard", package = "tidyr")
+
+billboard_long <- billboard %>%
+  pivot_longer(cols = starts_with("wk"), 
+               names_to = "week", 
+               values_to = "rank", 
+               values_drop_na = TRUE) %>%
+  mutate(week = parse_number(week),
+         year2000 = week + as.numeric(difftime(as.Date(date.entered), as.Date("2000-01-01"), units = "weeks")),
+         on_chart_2000 = year2000 >= 0 & year2000 <= 52) %>%
+  filter(on_chart_2000)
+
+top_artists <- billboard_long %>%
+  group_by(artist) %>%
+  summarise(weeks_on_chart = n()) %>%
+  arrange(desc(weeks_on_chart)) %>%
+  slice(1:10)
+
+ggplot(top_artists, aes(x = reorder(artist, weeks_on_chart), y = weeks_on_chart, fill = artist)) +
+  geom_col(show.legend = FALSE) +
+  coord_flip() +
+  labs(
+    title = "Top 10 Artists by Total Weeks on Billboard Chart in 2000",
+    x = "",
+    y = "Total Weeks on Chart"
+  ) +
+  scale_fill_manual(values = RColorBrewer::brewer.pal(10, "Set3")) +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(face = "bold", hjust = 0.5),
+    panel.grid.major.y = element_blank(),
+    plot.background = element_rect(fill = "#fcfcfc", color = NA)
+  )
+
+```
